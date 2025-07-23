@@ -49,6 +49,39 @@ const Home = () => {
     });
   }, []);
 
+  const deleteFolderHandler = (folderId: string) => {
+    const prevFolders = bookMarks;
+    prevFolders.splice(
+      prevFolders.findIndex((folder) => folder.id === folderId),
+      1
+    );
+    setBookMarks((prevFolder) =>
+      prevFolder.filter((folder) => folder.id !== folderId)
+    );
+    saveChromeStorage();
+  };
+
+  const deleteLinkHandler = (folderId: string, linkId: string) => {
+    const prevFolders = bookMarks;
+    const folder = prevFolders.find((folder) => folder.id === folderId);
+    if (folder) {
+      folder.childrens = folder.childrens.filter((link) => link.id !== linkId);
+    }
+
+    if (folder) {
+      setBookMarks((prev) => {
+        return prev.map((prevFolder) => {
+          if (prevFolder.id === folder?.id) {
+            return folder;
+          }
+          return prevFolder;
+        });
+      });
+    }
+
+    saveChromeStorage();
+  };
+
   const syncBookmarks = () => {
     const folders: Bookmark[] = [
       {
@@ -227,7 +260,7 @@ const Home = () => {
                       />
                     </>
                   ) : (
-                    <>
+                    <div className="flex gap-3">
                       <Link to={`/add/${bookmark.id}`}>
                         <button
                           //   onClick={() => setActiveFolder(bookmark.id)}
@@ -236,7 +269,13 @@ const Home = () => {
                           + Add
                         </button>
                       </Link>
-                    </>
+                      <button
+                        className="cursor-pointer hover:text-red-500"
+                        onClick={() => deleteFolderHandler(bookmark.id)}
+                      >
+                        Delete
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
@@ -253,21 +292,32 @@ const Home = () => {
                       <div className="mt-3 ml-3 flex justify-center flex-col gap-2">
                         {bookmark.childrens.map((child) => {
                           return (
-                            <a
-                              href={child.link}
-                              target="_blank"
-                              className="flex gap-3"
-                            >
-                              <img
-                                src={getFaviconUrl(child.link, 14)}
-                                width={14}
-                                height={14}
-                                alt="favicon"
-                                className="w-3.5 h-3.5"
-                              />
-                              {/* <IoDocumentTextOutline size={14} /> */}
-                              <p className="truncate">{child.title}</p>
-                            </a>
+                            <div className="flex justify-between">
+                              <a
+                                href={child.link}
+                                target="_blank"
+                                className="flex gap-3"
+                              >
+                                <img
+                                  src={getFaviconUrl(child.link, 14)}
+                                  width={14}
+                                  height={14}
+                                  alt="favicon"
+                                  className="w-3.5 h-3.5"
+                                />
+                                {/* <IoDocumentTextOutline size={14} /> */}
+                                <p className="truncate">{child.title}</p>
+                              </a>
+
+                              <button
+                                onClick={() =>
+                                  deleteLinkHandler(bookmark.id, child.id)
+                                }
+                                className="cursor-pointer hover:text-red-500"
+                              >
+                                Delete
+                              </button>
+                            </div>
                           );
                         })}
                       </div>

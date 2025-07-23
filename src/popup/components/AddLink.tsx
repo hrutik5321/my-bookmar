@@ -20,6 +20,7 @@ const AddLink = () => {
     );
     setBookmark(selectedBookmark);
   };
+
   useEffect(() => {
     getSelectedBookMark();
   }, [id]);

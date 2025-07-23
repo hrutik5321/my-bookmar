@@ -14,7 +14,7 @@ export default defineManifest({
     },
     default_popup: "src/popup/index.html",
   },
-  permissions: ["activeTab", "storage", "bookmarks"],
+  permissions: ["activeTab", "storage", "bookmarks", "tabs"],
   content_scripts: [
     {
       js: ["src/content/main.tsx"],
